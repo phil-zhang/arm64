@@ -21,5 +21,5 @@ bits(64) base = PC[];
 base<11:0> = Zeros(12);
 X[d] = base + imm;
 
-adrp指令会首先把label相对于当前指令page address的offset编码为imm，然后把PC的低12bit清0，再把imm左移12bit，两者相加得到一个page base（低12bit为0），
+adrp指令会首先把label相对于当前指令page address的offset编码为imm*4096，然后把PC的低12bit清0，再把imm左移12bit，两者相加得到一个page base（低12bit为0），
 因此计算后的结果是label的page address（在PC+-4G范围内）
