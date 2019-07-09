@@ -1,0 +1,22 @@
+191/*
+192 * Pseudo-ops for PC-relative adr/ldr/str <reg>, <symbol> where
+193 * <symbol> is within the range +/- 4 GB of the PC when running
+194 * in core kernel context. In module context, a movz/movk sequence
+195 * is used, since modules may be loaded far away from the kernel
+196 * when KASLR is in effect.
+197 */
+198	/*
+199	 * @dst: destination register (64 bit wide)
+200	 * @sym: name of the symbol
+201	 */
+202	.macro	adr_l, dst, sym
+203#ifndef MODULE
+204	adrp	\dst, \sym            \\获取sym的page base address，存放到dst
+205	add	\dst, \dst, :lo12:\sym  \\dst加上sym的低12位，因此计算出来的是sym的实际地址
+206#else
+207	movz	\dst, #:abs_g3:\sym
+208	movk	\dst, #:abs_g2_nc:\sym
+209	movk	\dst, #:abs_g1_nc:\sym
+210	movk	\dst, #:abs_g0_nc:\sym
+211#endif
+212	.endm
